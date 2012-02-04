@@ -1,4 +1,5 @@
-= JWS =
+JWS
+===
 
 jwt is a Python implementation of the *draft* [JSON Web Token (JWT)]
 [http://tools.ietf.org/html/draft-jones-json-web-token-07] specification.
@@ -16,7 +17,9 @@ Plain JWT with no signature nor encryption:
     {'headers': {u'alg': u'none', u'typ': u'JWT'}, 'valid': True, 'payload':
     {u'status': u'ready'}}
 
-== Signed JWT (JWS) ==
+
+Signed JWT (JWS)
+----------------
 
 For encoding, you need to provide an object representing your desired
 algorithm along with a key and, optionally, a key id for the header.
