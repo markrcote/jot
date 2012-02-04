@@ -1,8 +1,7 @@
 JWS
 ===
 
-jwt is a Python implementation of the *draft* [JSON Web Token (JWT)]
-[http://tools.ietf.org/html/draft-jones-json-web-token-07] specification.
+jwt is a Python implementation of the *draft* [JSON Web Token (JWT)](http://tools.ietf.org/html/draft-jones-json-web-token-07) specification.
 
 It supports signing through JWS (only SHA-256/384/512 HMAC support as of yet)
 and will eventually support encryption through JWE, following a similar API.
