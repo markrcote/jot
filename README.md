@@ -1,4 +1,4 @@
-JWS
+jwt
 ===
 
 jwt is a Python implementation of the *draft* [JSON Web Token (JWT)](http://tools.ietf.org/html/draft-jones-json-web-token-07) specification.
