@@ -19,7 +19,13 @@ class SignAndEncryptError(Exception):
     def __init__(self):
         self.message = 'can\'t both sign and encrypt a token'
 
-
+"""Generate JWT.
+'payload' should be either a JSON string or a JSON-compatible object.
+If given, 'signer' should be a Jws object, used to sign the payload.
+If given, 'encrypter' should a Jwe object, used to encrypt the payload.
+If both are given, a nested JWT is created by encrypting the payload, then
+signing the resultant JWE.
+"""
 def encode(payload, signer=None, encrypter=None):
     if signer and encrypter:
         raise SignAndEncryptError()
@@ -31,7 +37,10 @@ def encode(payload, signer=None, encrypter=None):
         headers.update(encrypter.headers)
 
     headers_json = json.dumps(headers, separators=(',', ':'))
-    payload_json = json.dumps(payload, separators=(',', ':'))
+    if isinstance(payload, basestring):
+        payload_json = payload
+    else:
+        payload_json = json.dumps(payload, separators=(',', ':'))
     header_b64 = b64encode(headers_json)
     payload_b64 = b64encode(payload_json)
 
@@ -41,7 +50,7 @@ def encode(payload, signer=None, encrypter=None):
 
     if signer:
         third_part = b64encode(signer.sign(first_part + '.' +
-                                                second_part))
+                                           second_part))
     if encrypter:
         pass  # TODO
 

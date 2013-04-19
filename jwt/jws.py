@@ -20,16 +20,41 @@ class KeyRequiredException(Exception):
         Exception.__init__(self, 'a key is required but was not provided')
 
 
-class JwsBase(object):
+class InvalidAlgorithmException(Exception):
+    def __init__(self, algid):
+        Exception.__init__(self, 'invalid algorithm %s' % algid)
 
-    def __init__(self, algid, key=None):
-        self.algid = algid
+
+ALGS = { 'HS': 'HmacSha' }
+
+class JwsAlgorithm(object):
+    pass
+
+
+class Jws(object):
+
+    def __init__(self, alg, key=None):
+        if isinstance(alg, basestring):
+            m = re.match('(\D+)(\d*)', alg)
+            if not m:
+                raise InvalidAlgorithmException(alg)
+            cls = ALGS.get(m.group(1))
+            if isinstance(cls, JwsAlgorithm):
+                bits = None
+                if m.group(2):
+                    try:
+                        bits = int(m.group(2))
+                    except ValueError:
+                        raise InvalidAlgorithmException(alg)
+                self.alg = cls(bits=bits)
+        else:
+            self.alg = alg
         self._key = key
 
     @property
     def headers(self):
-        h = {'alg': self.algid}
-        h.update(self.get_headers())
+        h = {'alg': self.alg.id}
+        h.update(self.alg.headers())
         return h
 
     @property
@@ -38,9 +63,6 @@ class JwsBase(object):
             return self.get_key()
         return self._key
 
-    def get_headers(self):
-        return {}
-
     def get_key(self):
         return None
 
@@ -48,7 +70,7 @@ class JwsBase(object):
         return signature == self.sign(signing_input)
  
     def sign(self, signing_input):
-        raise NotImplementedError
+        return self.alg.sign(signing_input)
 
 
 class HmacSha(JwsBase):
@@ -104,4 +126,3 @@ class HmacSha(JwsBase):
             return signature == self.sign(signing_input, key)
         except KeyRequiredException:
             return False
-
