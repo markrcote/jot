@@ -2,20 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-__all__ = ['JwsBase', 'HmacSha', 'KeyRequiredException',
-           'KeyNotFoundException']
+__all__ = ['JwsBase', 'HmacSha', 'KeyRequiredException']
 
-import base64
 import hashlib
 import hmac
 
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 
 class KeyRequiredException(Exception):
+
     def __init__(self):
         Exception.__init__(self, 'a key is required but was not provided')
 
