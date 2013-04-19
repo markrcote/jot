@@ -81,21 +81,26 @@ class HmacSha(JwsBase):
         return hmac.new(key, signing_input, self.digestmod).digest()
 
     def validate(self, headers, signing_input, signature):
-        """Order for determining which key to use:
-        - self.key
-        - self.keydict[self.key_id]
-        - self.keydict[headers['kid']]
+        """If self.key is present and verifies the signature, return True.
+        If a 'kid' header is given, has an associated key in self.keydict,
+            and that key verifies the signature, return True.
+        If a 'kid' header is not given and self.keydict[self.key_id] exists
+            and verifies the signature, return True.
+        Otherwise, return False.
         """
-        key = None
-        if self.key:
-            key = self.key
-        elif 'kid' in headers and self.keydict:
+        def check(key):
+            return signature == self.sign(signing_input, key)
+
+        if self.key and check(self.key):
+            return True
+
+        if 'kid' in headers:
             try:
-                key = self.keydict[headers['kid']]
+                return check(self.keydict[headers['kid']])
             except KeyError:
                 return False
-        try:
-            return signature == self.sign(signing_input, key)
-        except KeyRequiredException:
-            return False
+        
+        if self.key and self.key_id and check(self.keydict[self.key_id]):
+            return True
 
+        return False
