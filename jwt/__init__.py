@@ -5,11 +5,7 @@
 __all__ = ['SignAndEncryptError', 'encode', 'decode']
 
 import base64
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
+import json
 
 import jws
 

@@ -40,7 +40,7 @@ class JwsBase(object):
 
     def validate(self, headers, signing_input, signature):
         return signature == self.sign(signing_input)
- 
+
     def sign(self, signing_input):
         raise NotImplementedError
 
@@ -99,7 +99,7 @@ class HmacSha(JwsBase):
                 return check(self.keydict[headers['kid']])
             except KeyError:
                 return False
-        
+
         if self.key and self.key_id and check(self.keydict[self.key_id]):
             return True
 
