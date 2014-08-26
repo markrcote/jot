@@ -7,13 +7,13 @@ import sys
 from setuptools import setup, find_packages
 
 version = '0.1'
-PACKAGE_NAME = 'jwt'
+PACKAGE_NAME = 'jot'
 
 if sys.version < '2.6' or sys.version >= '3.0':
     print >>sys.stderr, '%s requires Python >= 2.6 and < 3.0' % PACKAGE_NAME
     sys.exit(1)
 
-setup(name='jwt',
+setup(name='jot',
       version=version,
       description="JSON Web Tokens",
       long_description="""
@@ -22,7 +22,7 @@ setup(name='jwt',
       keywords='',
       author='Mark Côté',
       author_email='mcote@mozilla.com',
-      url='https://github.com/markrcote/jwt',
+      url='https://github.com/markrcote/jot',
       license='MPL 2.0',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,

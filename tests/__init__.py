@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import jwt
+from jot import jwt, jws
 import unittest
 
 class TestJwt(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestJwt(unittest.TestCase):
 
     def test_hmac_sha256(self):
         self.assertEqual(jwt.decode(self.jws_repr,
-                                    signers=[jwt.jws.HmacSha(key=self.key)]),
+                                    signers=[jws.HmacSha(key=self.key)]),
                          { 'headers': {u'alg': u'HS256', u'typ': u'JWT'},
                            'payload': self.payload,
                            'valid': True })
@@ -31,56 +31,56 @@ class TestJwt(unittest.TestCase):
         keydict = {'secret': self.key, 'secret2': 'abcd'}
         self.assertEqual(jwt.decode(
                 jwt.encode(self.payload,
-                           signer=jwt.jws.HmacSha(keydict=keydict,
+                           signer=jws.HmacSha(keydict=keydict,
                                                   key_id='secret')),
-                signers=[jwt.jws.HmacSha(keydict=keydict)]),
+                signers=[jws.HmacSha(keydict=keydict)]),
                          { 'headers': {u'alg': u'HS256', u'typ': u'JWT',
                                        u'kid': u'secret'},
                            'payload': self.payload,
                            'valid': True })
 
         # Test some errors in encoding.
-        self.assertRaises(jwt.jws.KeyRequiredException, jwt.encode,
-                          self.payload, signer=jwt.jws.HmacSha())
+        self.assertRaises(jws.KeyRequiredException, jwt.encode,
+                          self.payload, signer=jws.HmacSha())
 
-        self.assertRaises(jwt.jws.KeyRequiredException, jwt.encode,
+        self.assertRaises(jws.KeyRequiredException, jwt.encode,
                           self.payload,
-                          signer=jwt.jws.HmacSha(keydict=keydict,
+                          signer=jws.HmacSha(keydict=keydict,
                                                  key_id='notfound'))
 
         # Test encoding with no kid.
 
-        msg = jwt.encode(self.payload, jwt.jws.HmacSha(key=self.key))
+        msg = jwt.encode(self.payload, jws.HmacSha(key=self.key))
         # Just default key given to decoder.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key=self.key)])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key=self.key)])['valid'])
         # Default key and random entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key=self.key, keydict={'foo': 'bar'})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key=self.key, keydict={'foo': 'bar'})])['valid'])
         # Default key, nonmatching default key id, random entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key=self.key, key_id='foo', keydict={'foo': 'bar'})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key=self.key, key_id='foo', keydict={'foo': 'bar'})])['valid'])
         # No default key, nonmatching default key id, random entry in keydict.
-        self.assertFalse(jwt.decode(msg, signers=[jwt.jws.HmacSha(key_id='foo', keydict={'foo': 'bar'})])['valid'])
+        self.assertFalse(jwt.decode(msg, signers=[jws.HmacSha(key_id='foo', keydict={'foo': 'bar'})])['valid'])
         # No default key, matching default key id, random entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key_id='foo', keydict={'foo': self.key})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key_id='foo', keydict={'foo': self.key})])['valid'])
         # No key given to decoder.
-        self.assertFalse(jwt.decode(msg, signers=[jwt.jws.HmacSha()])['valid'])
-        self.assertFalse(jwt.decode(msg, signers=[jwt.jws.HmacSha(keydict={'foo': 'bar'})])['valid'])
+        self.assertFalse(jwt.decode(msg, signers=[jws.HmacSha()])['valid'])
+        self.assertFalse(jwt.decode(msg, signers=[jws.HmacSha(keydict={'foo': 'bar'})])['valid'])
 
         # With kid.
-        msg = jwt.encode(self.payload, jwt.jws.HmacSha(key=self.key, key_id=self.key_id))
+        msg = jwt.encode(self.payload, jws.HmacSha(key=self.key, key_id=self.key_id))
         # Default matching key.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key=self.key)])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key=self.key)])['valid'])
         # Nonmatching default key, matching entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key='nope', keydict={self.key_id: self.key})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key='nope', keydict={self.key_id: self.key})])['valid'])
         # Default key and random entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key=self.key, keydict={'foo': 'bar'})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key=self.key, keydict={'foo': 'bar'})])['valid'])
         # No default key, nonmatching default key id, random entry in keydict.
-        self.assertFalse(jwt.decode(msg, signers=[jwt.jws.HmacSha(key_id='foo', keydict={'foo': 'bar'})])['valid'])
+        self.assertFalse(jwt.decode(msg, signers=[jws.HmacSha(key_id='foo', keydict={'foo': 'bar'})])['valid'])
         # No default key, matching default key id, random entry in keydict.
-        self.assertTrue(jwt.decode(msg, signers=[jwt.jws.HmacSha(key_id='foo', keydict={'foo': self.key})])['valid'])
+        self.assertTrue(jwt.decode(msg, signers=[jws.HmacSha(key_id='foo', keydict={'foo': self.key})])['valid'])
 
-        msg = jwt.encode(self.payload, signer=jwt.jws.HmacSha(
+        msg = jwt.encode(self.payload, signer=jws.HmacSha(
                 key=self.key, key_id='secret'))
-        self.assertFalse(jwt.decode(msg, signers=[jwt.jws.HmacSha(
+        self.assertFalse(jwt.decode(msg, signers=[jws.HmacSha(
                     keydict={'wrongkid': self.key})])['valid'])
 
 

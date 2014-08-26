@@ -2,4 +2,4 @@
 *.pyc
 *.swp
 dist
-jwt.egg-info
+jot.egg-info

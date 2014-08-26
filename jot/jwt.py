@@ -7,8 +7,6 @@ __all__ = ['SignAndEncryptError', 'encode', 'decode']
 import base64
 import json
 
-import jws
-
 
 class SignAndEncryptError(Exception):
 
