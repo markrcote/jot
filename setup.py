@@ -6,7 +6,7 @@
 import sys
 from setuptools import setup, find_packages
 
-version = '0.1'
+version = '0.2'
 PACKAGE_NAME = 'jot'
 
 if sys.version < '2.6' or sys.version >= '3.0':
@@ -16,8 +16,6 @@ if sys.version < '2.6' or sys.version >= '3.0':
 setup(name='jot',
       version=version,
       description="JSON Web Tokens",
-      long_description="""
-""",
       classifiers=[],
       keywords='',
       author='Mark Côté',

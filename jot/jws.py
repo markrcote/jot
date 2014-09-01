@@ -7,6 +7,8 @@ __all__ = ['JwsBase', 'HmacSha', 'KeyRequiredException']
 import hashlib
 import hmac
 
+from jot.crypto import constant_time_compare
+
 
 class KeyRequiredException(Exception):
 
@@ -39,7 +41,7 @@ class JwsBase(object):
         return None
 
     def validate(self, headers, signing_input, signature):
-        return signature == self.sign(signing_input)
+        return constant_time_compare(signature, self.sign(signing_input))
 
     def sign(self, signing_input):
         raise NotImplementedError
@@ -89,7 +91,8 @@ class HmacSha(JwsBase):
         Otherwise, return False.
         """
         def check(key):
-            return signature == self.sign(signing_input, key)
+            return constant_time_compare(signature,
+                                         self.sign(signing_input, key))
 
         if self.key and check(self.key):
             return True
